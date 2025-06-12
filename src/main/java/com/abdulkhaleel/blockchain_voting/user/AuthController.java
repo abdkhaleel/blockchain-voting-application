@@ -80,46 +80,48 @@ public class AuthController {
     }
 
 
+    // In AuthController.java
+
     @PostMapping("/users/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
         if (userRepository.existsByUsername(registerRequest.getUsername())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Username is already taken!"));
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
         }
 
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Email is already in use!"));
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
         }
 
-        // --- NEW, MORE ROBUST LOGIC ---
-
-        // Step 1: Create the User object and set its direct properties.
+        // Create new user's account
         User user = new User();
         user.setUsername(registerRequest.getUsername());
         user.setEmail(registerRequest.getEmail());
         user.setPassword(encoder.encode(registerRequest.getPassword()));
-        // isEnabled is already true by default in the entity, which is good.
 
-        // Step 2: Find the Role. This is a critical step.
-        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                .orElseThrow(() -> new RuntimeException("Error: Default user role (ROLE_USER) not found in database."));
-
-        // Step 3: Create the roles set and add the found role.
+        Set<String> strRoles = registerRequest.getRoles();
         Set<Role> roles = new HashSet<>();
-        roles.add(userRole);
 
-        // Step 4: Set the roles collection on the user object.
+        if (strRoles == null || strRoles.isEmpty()) {
+            Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+                    .orElseThrow(() -> new RuntimeException("Error: Role 'USER' is not found."));
+            roles.add(userRole);
+        } else {
+            strRoles.forEach(role -> {
+                switch (role.toLowerCase()) {
+                    case "admin":
+                        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                                .orElseThrow(() -> new RuntimeException("Error: Role 'ADMIN' is not found."));
+                        roles.add(adminRole);
+                        break;
+                    default:
+                        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+                                .orElseThrow(() -> new RuntimeException("Error: Role 'USER' is not found."));
+                        roles.add(userRole);
+                }
+            });
+        }
+
         user.setRoles(roles);
-
-        // --- DEBUGGING: Let's see the object RIGHT BEFORE we save it ---
-        System.out.println("---- DEBUG: Saving User Object ----");
-        System.out.println(user.toString());
-        // --- END DEBUGGING ---
-
-        // Step 5: Save the fully constructed user object to the database.
         userRepository.save(user);
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));

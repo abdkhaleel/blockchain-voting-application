@@ -5,6 +5,7 @@ import com.abdulkhaleel.blockchain_voting.security.jwt.AuthTokenFilter;
 import com.abdulkhaleel.blockchain_voting.security.services.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -60,6 +61,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/api/auth/**", "/api/users/register").permitAll()
                                 .requestMatchers("/api/test/**", "/api/health", "/").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/elections/**").permitAll()
                                 .anyRequest().authenticated()
                 );
         http.authenticationProvider(authenticationProvider());
