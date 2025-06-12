@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface ElectionRepository extends JpaRepository<Election, Long> {
     List <Election> findByStatus(ElectionStatus status);
+
+    Election getById(Long electionId);
 }
