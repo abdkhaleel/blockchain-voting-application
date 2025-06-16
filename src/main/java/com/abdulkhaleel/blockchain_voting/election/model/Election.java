@@ -1,11 +1,15 @@
 package com.abdulkhaleel.blockchain_voting.election.model;
 
+import com.abdulkhaleel.blockchain_voting.candidate.model.Candidate;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "elections")
@@ -36,4 +40,8 @@ public class Election {
     private boolean allowRevote;
 
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @OneToMany(mappedBy = "election", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private Set<Candidate> candidates = new HashSet<>();
 }
