@@ -1,5 +1,6 @@
 package com.abdulkhaleel.blockchain_voting.user.model;
 
+import com.abdulkhaleel.blockchain_voting.election.model.Election;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -15,8 +16,8 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString(exclude = "roles")
-@EqualsAndHashCode(exclude = "roles")
+@ToString(exclude = {"roles", "eligibleElections"})
+@EqualsAndHashCode(exclude = {"roles", "eligibleElections"})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,4 +47,8 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
+
+    @ManyToMany(mappedBy = "eligibleVoters")
+    @JsonIgnore
+    private Set<Election> eligibleElections = new HashSet<>();
 }
