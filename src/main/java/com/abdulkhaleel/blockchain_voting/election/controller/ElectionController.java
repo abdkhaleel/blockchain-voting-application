@@ -1,11 +1,13 @@
 package com.abdulkhaleel.blockchain_voting.election.controller;
 
 import com.abdulkhaleel.blockchain_voting.election.dto.CreateElectionRequest;
+import com.abdulkhaleel.blockchain_voting.election.dto.ElectionResultsResponse;
 import com.abdulkhaleel.blockchain_voting.election.dto.UpdateElectionRequest;
 import com.abdulkhaleel.blockchain_voting.election.model.Election;
 import com.abdulkhaleel.blockchain_voting.election.model.ElectionResponse;
 import com.abdulkhaleel.blockchain_voting.election.services.ElectionService;
 import com.abdulkhaleel.blockchain_voting.user.dto.MessageResponse;
+import com.abdulkhaleel.blockchain_voting.vote.service.VoteService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,6 +25,7 @@ import java.time.LocalDateTime;
 public class ElectionController {
 
     private final ElectionService electionService;
+    private final VoteService voteService;
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
@@ -70,5 +73,11 @@ public class ElectionController {
                 .allowRevote(election.isAllowRevote())
                 .createdAt(election.getCreatedAt())
                 .build();
+    }
+
+    @GetMapping("/{electionId}/results")
+    public ResponseEntity<ElectionResultsResponse> getElectionResults(@PathVariable Long electionId){
+        ElectionResultsResponse results = voteService.getElectionResult(electionId);
+        return ResponseEntity.ok(results);
     }
 }

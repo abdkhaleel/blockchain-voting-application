@@ -2,6 +2,8 @@ package com.abdulkhaleel.blockchain_voting.vote.service;
 
 import com.abdulkhaleel.blockchain_voting.candidate.model.Candidate;
 import com.abdulkhaleel.blockchain_voting.candidate.repository.CandidateRepository;
+import com.abdulkhaleel.blockchain_voting.election.dto.CandidateResultDto;
+import com.abdulkhaleel.blockchain_voting.election.dto.ElectionResultsResponse;
 import com.abdulkhaleel.blockchain_voting.election.model.Election;
 import com.abdulkhaleel.blockchain_voting.election.model.ElectionStatus;
 import com.abdulkhaleel.blockchain_voting.election.repository.ElectionRepository;
@@ -10,6 +12,7 @@ import com.abdulkhaleel.blockchain_voting.security.services.UserDetailsImpl;
 import com.abdulkhaleel.blockchain_voting.user.dto.MessageResponse;
 import com.abdulkhaleel.blockchain_voting.user.model.User;
 import com.abdulkhaleel.blockchain_voting.user.repository.UserRepository;
+import com.abdulkhaleel.blockchain_voting.vote.dto.CandidateVoteCount;
 import com.abdulkhaleel.blockchain_voting.vote.dto.CastVoteRequest;
 import com.abdulkhaleel.blockchain_voting.vote.dto.HasVotedResponse;
 import com.abdulkhaleel.blockchain_voting.vote.dto.VoteResponse;
@@ -20,7 +23,10 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -103,5 +109,33 @@ public class VoteServiceImpl implements VoteService{
         voteRepository.delete(vote);
 
         return new MessageResponse("Your vote has been retracted successfully.");
+    }
+
+    @Override
+    public ElectionResultsResponse getElectionResult(Long electionId){
+        Election election = electionRepository.findById(electionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Election not found with the id: "));
+
+        List<CandidateVoteCount> voteCounts = voteRepository.countVotesByElection(electionId);
+
+        Map<Long, Long> candidateIdToVoteCountMap = voteCounts.stream()
+                .collect(Collectors.toMap(CandidateVoteCount::getCandidateId, CandidateVoteCount::getVoteCount));
+
+        List<CandidateResultDto> candidateResults = election.getCandidates().stream()
+                .map(candidate -> CandidateResultDto.builder()
+                        .candidateId(candidate.getId())
+                        .name(candidate.getName())
+                        .voteCount(candidateIdToVoteCountMap.getOrDefault(candidate.getId(), 0L))
+                        .build())
+                .collect(Collectors.toList());
+
+        return ElectionResultsResponse.builder()
+                .electionId(election.getId())
+                .name(election.getTitle())
+                .status(election.getStatus())
+                .startTime(election.getStartDate())
+                .endTime(election.getEndDate())
+                .results(candidateResults)
+                .build();
     }
 }
