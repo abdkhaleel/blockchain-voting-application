@@ -1,5 +1,6 @@
 package com.abdulkhaleel.blockchain_voting.vote.service;
 
+import com.abdulkhaleel.blockchain_voting.election.dto.ElectionResultsResponse;
 import com.abdulkhaleel.blockchain_voting.security.services.UserDetailsImpl;
 import com.abdulkhaleel.blockchain_voting.user.dto.MessageResponse;
 import com.abdulkhaleel.blockchain_voting.vote.dto.CastVoteRequest;
@@ -10,4 +11,5 @@ public interface VoteService {
     VoteResponse castVote(CastVoteRequest castVoteRequest, UserDetailsImpl currentUser);
     HasVotedResponse checkIfVoted(Long electionId, UserDetailsImpl currentUser);
     MessageResponse refractVote(Long electionId, UserDetailsImpl currentUser);
+    ElectionResultsResponse getElectionResult(Long electionId);
 }
