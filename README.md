@@ -98,8 +98,8 @@ The system is being built in phases. The following key features are currently im
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/your-username/blockchain-voting.git
-    cd blockchain-voting
+    git https://github.com/abdkhaleel/blockchain-voting-application.git
+    cd blockchain-voting-application
     ```
 
 2.  **Start the Database:**
