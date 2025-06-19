@@ -1,0 +1,129 @@
+# Blockchain Voting System API
+
+This repository contains the backend API for a secure, robust, and modern Blockchain-Powered Electronic Voting System. The system is designed using a hybrid architecture, leveraging a high-performance PostgreSQL database for real-time operations and a simulated blockchain for immutable anchoring and verification of election results.
+
+This API provides a comprehensive set of endpoints for managing users, elections, candidates, voter eligibility, and the core voting process itself.
+
+## Core Features Implemented
+
+The system is being built in phases. The following key features are currently implemented and stable:
+
+### 1. 🛡️ Authentication & Authorization
+- **JWT-Based Security:** State-of-the-art security using JSON Web Tokens (JWT) for stateless authentication.
+- **Role-Based Access Control (RBAC):** Clear distinction between `USER` and `ADMIN` roles, with endpoints protected using method-level security (`@PreAuthorize`).
+- **User Registration:** Secure user registration with password hashing using BCrypt.
+- **Admin & User Roles:** Flexible registration system capable of assigning `USER` or `ADMIN` roles.
+
+### 2. 🗳️ Election Management
+- **Full CRUD Operations:** Administrators can create, read, update, and delete elections.
+- **Detailed Election Information:** Elections store critical data such as title, description, start/end dates, and status (`PENDING`, `ACTIVE`, `COMPLETED`).
+- **Public Listing:** Endpoints are available to publicly list all elections with support for pagination and sorting.
+
+### 3. 👥 Candidate Management
+- **Election-Specific Candidates:** Candidates are strongly associated with a specific election.
+- **Full CRUD Operations:** Administrators can add, view, update, and remove candidates for any given election.
+- **Public Information:** Candidate lists for any election are publicly viewable.
+
+### 4. 📝 Voter Eligibility Management
+- **Private Election Support:** Admins can manage a list of eligible voters for any specific election.
+- **Eligibility Control:** Endpoints allow admins to add or remove a registered user's eligibility to vote in an election.
+- **Self-Check:** Authenticated users can check their own eligibility for a specific election.
+
+### 5. ✓ Core Voting Operations
+- **Secure Vote Casting:** Eligible users can cast a single, unique vote for a candidate in an active election. The system prevents duplicate voting at the database level.
+- **Vote Status Check:** Users can verify whether they have already cast their vote in a particular election.
+- **Vote Retraction:** If an election is configured to `allowRevote`, users have the ability to retract their vote.
+
+## Technology Stack
+
+- **Backend:** [Spring Boot 3.3.0](https://spring.io/projects/spring-boot)
+- **Language:** [Java 17](https://www.oracle.com/java/technologies/javase/17-archive-downloads.html)
+- **Database:** [PostgreSQL](https://www.postgresql.org/)
+- **Security:** [Spring Security 6](https://spring.io/projects/spring-security), JWT
+- **Data Access:** [Spring Data JPA](https://spring.io/projects/spring-data-jpa), Hibernate
+- **Build Tool:** [Apache Maven](https://maven.apache.org/)
+- **Containerization:** [Docker](https://www.docker.com/) & Docker Compose
+
+## API Endpoints Summary
+
+### Authentication (`/api/auth`, `/api/users`)
+| Method | Endpoint | Description | Access |
+|---|---|---|---|
+| `POST` | `/api/users/register` | Register a new user or admin. | Public |
+| `POST` | `/api/auth/login` | Authenticate a user and receive a JWT. | Public |
+
+### Election Management (`/api/elections`)
+| Method | Endpoint | Description | Access |
+|---|---|---|---|
+| `POST` | `/api/elections` | Create a new election. | Admin |
+| `GET` | `/api/elections` | Get a paginated list of all elections. | Public |
+| `GET` | `/api/elections/{id}` | Get details of a single election. | Public |
+| `PUT` | `/api/elections/{id}` | Update an existing election. | Admin |
+| `DELETE` | `/api/elections/{id}` | Delete an election. | Admin |
+
+### Candidate Management (`/api/elections`, `/api/candidates`)
+| Method | Endpoint | Description | Access |
+|---|---|---|---|
+| `POST` | `/api/elections/{eid}/candidates` | Add a candidate to an election. | Admin |
+| `GET` | `/api/elections/{eid}/candidates` | Get all candidates for an election. | Public |
+| `GET` | `/api/candidates/{cid}` | Get a single candidate by their ID. | Public |
+| `PUT` | `/api/elections/{eid}/candidates/{cid}` | Update a candidate's details. | Admin |
+| `DELETE`| `/api/elections/{eid}/candidates/{cid}`| Remove a candidate from an election. | Admin |
+
+### Voter Eligibility (`/api/elections/{eid}/voters`)
+| Method | Endpoint | Description | Access |
+|---|---|---|---|
+| `POST` | `/api/elections/{eid}/voters/{uid}` | Make a user eligible to vote. | Admin |
+| `DELETE` | `/api/elections/{eid}/voters/{uid}` | Remove a user's eligibility. | Admin |
+| `GET` | `/api/elections/{eid}/voters` | Get a list of eligible voters. | Admin |
+| `GET` | `/api/elections/{eid}/eligibility` | Check if the current user is eligible. | User |
+
+### Voting Operations (`/api/votes`)
+| Method | Endpoint | Description | Access |
+|---|---|---|---|
+| `POST` | `/api/votes` | Cast a vote in an election. | User |
+| `GET` | `/api/votes/check/{eid}` | Check if the current user has voted. | User |
+| `DELETE` | `/api/votes/{eid}` | Retract the current user's vote. | User |
+
+## Getting Started
+
+### Prerequisites
+- [JDK 17](https://adoptium.net/temurin/releases/) or newer
+- [Docker](https://www.docker.com/products/docker-desktop/) and Docker Compose
+- [Apache Maven](https://maven.apache.org/download.cgi)
+- An IDE like [IntelliJ IDEA](https://www.jetbrains.com/idea/)
+- A REST client like [Postman](https://www.postman.com/) or [Insomnia](https://insomnia.rest/)
+
+### Installation & Setup
+
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/your-username/blockchain-voting.git
+    cd blockchain-voting
+    ```
+
+2.  **Start the Database:**
+    The project includes a `docker-compose.yml` file to easily run a PostgreSQL database instance.
+    ```bash
+    docker-compose up -d
+    ```
+    This will start a PostgreSQL server on `localhost:5432`.
+
+3.  **Configure the Application:**
+    The database connection properties are already configured in `src/main/resources/application.properties`. You can modify them if your setup is different.
+
+4.  **Build and Run the Application:**
+    You can run the application using your IDE by running the `main` method in `BlockchainVotingApplication.java`, or by using the Maven wrapper:
+    ```bash
+    ./mvnw spring-boot:run
+    ```
+    The API will be available at `http://localhost:8080`.
+
+## Future Work
+
+The project is actively being developed. Upcoming features include:
+- Enhanced user profile management.
+- Bulk operations for adding voters and candidates.
+- Advanced analytics and real-time results.
+- Full implementation of the blockchain anchoring layer for vote immutability.
+- System-wide notifications and audit logging.
