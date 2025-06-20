@@ -56,6 +56,18 @@ The system is being built in phases. The following key features are currently im
 - **Build Tool:** [Apache Maven](https://maven.apache.org/)
 - **Containerization:** [Docker](https://www.docker.com/) & Docker Compose
 
+## Verifying Election Integrity
+
+The blockchain provides a mechanism for any administrator or auditor to verify that the election results stored in the database have not been tampered with after an election was completed.
+
+The process is as follows:
+
+1.  **Get the Anchor Hash:** Use the `GET /api/blockchain` endpoint (admin-only) to retrieve the entire chain. Find the block corresponding to the election and copy the `data` field. This is the official, immutable hash of the results (`HASH_FROM_CHAIN`).
+2.  **Get Current Results:** Use the public `GET /api/elections/{id}/results` endpoint to fetch the current results as reported by the database.
+3.  **Re-create the Hash String:** Based on the results from step 2, construct a deterministic string by sorting candidates by their ID. For example: `electionId:101;candidateId1:votes1;candidateId2:votes2;`.
+4.  **Recalculate the Hash:** Use an external tool (like an online SHA-256 generator) to calculate the hash of the string from step 3 (`RECALCULATED_HASH`).
+5.  **Compare:** If `HASH_FROM_CHAIN` is identical to `RECALCULATED_HASH`, the results are valid. If they differ, the database has been tampered with.
+
 ## API Endpoints Summary
 
 ### Authentication (`/api/auth`, `/api/users`)
@@ -74,6 +86,11 @@ The system is being built in phases. The following key features are currently im
 | `POST` | `/api/elections/{id}/complete` | Completes an election and anchors its results to the blockchain. | Admin |
 | `PUT` | `/api/elections/{id}` | Update an existing election. | Admin |
 | `DELETE`| `/api/elections/{id}` | Delete an election. | Admin |
+
+### Blockchain (`/api/blockchain`)
+| Method | Endpoint | Description | Access |
+|---|---|---|---|
+| `GET` | `/api/blockchain` | View the entire blockchain ledger. | Admin |
 
 ### Candidate Management (`/api/elections`, `/api/candidates`)
 | Method | Endpoint | Description | Access |
