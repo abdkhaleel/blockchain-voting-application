@@ -54,4 +54,7 @@ public class Election {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "election_voters", joinColumns = @JoinColumn(name = "election_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> eligibleVoters = new HashSet<>();
+
+    @Column(unique = true)
+    private String anchorHash;
 }

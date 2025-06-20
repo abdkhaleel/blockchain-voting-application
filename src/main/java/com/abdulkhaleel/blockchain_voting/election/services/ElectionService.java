@@ -3,6 +3,7 @@ package com.abdulkhaleel.blockchain_voting.election.services;
 import com.abdulkhaleel.blockchain_voting.election.dto.CreateElectionRequest;
 import com.abdulkhaleel.blockchain_voting.election.dto.UpdateElectionRequest;
 import com.abdulkhaleel.blockchain_voting.election.model.Election;
+import com.abdulkhaleel.blockchain_voting.election.model.ElectionResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -12,4 +13,5 @@ public interface ElectionService {
     Election getElectionById(Long electionId);
     Election updateElection(Long electionId, UpdateElectionRequest request);
     void deleteElection(Long electionId);
+    ElectionResponse closeAndAnchorElection(Long electionId);
 }

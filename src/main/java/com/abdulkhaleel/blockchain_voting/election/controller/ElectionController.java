@@ -80,4 +80,11 @@ public class ElectionController {
         ElectionResultsResponse results = voteService.getElectionResult(electionId);
         return ResponseEntity.ok(results);
     }
+
+    @PostMapping("/{electionId}/complete")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ElectionResponse> completeAnchorElection(@PathVariable Long electionId){
+        ElectionResponse updatedElection = electionService.closeAndAnchorElection(electionId);
+        return ResponseEntity.ok(updatedElection);
+    }
 }
