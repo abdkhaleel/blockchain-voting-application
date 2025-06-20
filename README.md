@@ -16,7 +16,7 @@ The system is being built in phases. The following key features are currently im
 
 ### 2. 🗳️ Election Management
 - **Full CRUD Operations:** Administrators can create, read, update, and delete elections.
-- **Detailed Election Information:** Elections store critical data such as title, description, start/end dates, and status (`PENDING`, `ACTIVE`, `CLOSED`).
+- **Detailed Election Information:** Elections store critical data such as title, description, start/end dates, and status (`PENDING`, `ACTIVE`, `COMPLETED`).
 - **Public Listing:** Endpoints are available to publicly list all elections with support for pagination and sorting.
 
 ### 3. 👥 Candidate Management
@@ -38,6 +38,12 @@ The system is being built in phases. The following key features are currently im
 - **Public Results Endpoint:** A dedicated public endpoint to view the results of any election.
 - **Live Vote Tally:** Returns a list of all candidates in the election along with their current vote count.
 - **Complete Transparency:** Ensures all candidates are included in the results, even those with zero votes, providing a full and honest tally.
+
+### 7. ⚓ Secure Election Anchoring
+- **Admin-Only Operation:** A secure endpoint allows administrators to formally complete an election.
+- **Cryptographic Proof:** Generates a unique SHA-256 hash of the final, aggregated election results.
+- **Blockchain Anchoring:** Stores this hash in a new block on a simulated blockchain, creating a permanent, tamper-evident seal.
+- **Result Immutability:** Guarantees that the declared final results can be verified and proven to have not been altered after the election's closure.
 
 
 ## Technology Stack
@@ -64,9 +70,10 @@ The system is being built in phases. The following key features are currently im
 | `POST` | `/api/elections` | Create a new election. | Admin |
 | `GET` | `/api/elections` | Get a paginated list of all elections. | Public |
 | `GET` | `/api/elections/{id}` | Get details of a single election. | Public |
-| `GET` | `/api/elections/{id}/results` | Get the vote tally for each candidate in an election. | Public |
+| `GET` | `/api/elections/{id}/results` | Get the vote tally for an election. | Public |
+| `POST` | `/api/elections/{id}/complete` | Completes an election and anchors its results to the blockchain. | Admin |
 | `PUT` | `/api/elections/{id}` | Update an existing election. | Admin |
-| `DELETE` | `/api/elections/{id}` | Delete an election. | Admin |
+| `DELETE`| `/api/elections/{id}` | Delete an election. | Admin |
 
 ### Candidate Management (`/api/elections`, `/api/candidates`)
 | Method | Endpoint | Description | Access |
@@ -129,8 +136,7 @@ The system is being built in phases. The following key features are currently im
 ## Future Work
 
 The project is actively being developed. Upcoming features include:
-- Full implementation of the blockchain anchoring layer for vote immutability.
 - Enhanced user profile management.
 - Bulk operations for adding voters and candidates.
-- Advanced analytics and real-time results.
 - System-wide notifications and audit logging.
+- Advanced analytics and real-time results dashboards.
