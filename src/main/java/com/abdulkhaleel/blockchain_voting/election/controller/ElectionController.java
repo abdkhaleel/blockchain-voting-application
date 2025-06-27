@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/elections")
+@CrossOrigin(origins = "http://localhost:8081")
 @RequiredArgsConstructor
 public class ElectionController {
 

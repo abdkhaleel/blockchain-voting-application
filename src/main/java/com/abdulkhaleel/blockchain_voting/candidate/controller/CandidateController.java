@@ -14,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins = "http://localhost:8081")
 @RequiredArgsConstructor
 public class CandidateController {
     private final CandidateService candidateService;
