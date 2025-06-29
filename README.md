@@ -158,10 +158,12 @@ Below are example JSON payloads for `POST` and `PUT` requests.
 #### `POST /api/elections` or `PUT /api/elections/{id}`
 ```json
 {
-    "name": "Annual Board Election",
-    "description": "Election for the 2024 board members.",
-    "startTime": "2024-08-01T09:00:00",
-    "endTime": "2024-08-15T17:00:00"
+  "title": "Future Annual Board Election",
+  "description": "An election scheduled correctly for the future.",
+  "startDate": "2025-08-01T09:00:00",
+  "endDate": "2025-09-15",
+  "isPublic": true,
+  "allowRevote": false
 }
 ```
 
@@ -171,7 +173,7 @@ Below are example JSON payloads for `POST` and `PUT` requests.
 ```json
 {
     "name": "Jane Doe",
-    "affiliation": "Independent"
+    "party": "Independent"
 }
 ```
 
