@@ -1,8 +1,19 @@
+
+---
+
 # Blockchain Voting System API
 
 This repository contains the backend API for a secure, robust, and modern Blockchain-Powered Electronic Voting System. The system is designed using a hybrid architecture, leveraging a high-performance PostgreSQL database for real-time operations and a simulated blockchain for immutable anchoring and verification of election results.
 
-This API provides a comprehensive set of endpoints for managing users, elections, candidates, voter eligibility, and the core voting process itself.
+## 🚀 Live Demo
+
+The backend API is deployed on Render and is publicly accessible. You can test the public endpoints directly.
+
+**Base URL:** `https://blockchain-voting-application.onrender.com`
+
+[![Live API](https://img.shields.io/badge/API-Live_&_Accessible-brightgreen?style=for-the-badge)](https://blockchain-voting-application.onrender.com/api/elections)
+
+*(Note: The free Render instance may spin down due to inactivity. The first request might take 30-60 seconds to respond.)*
 
 ## Core Features Implemented
 
@@ -70,6 +81,8 @@ The process is as follows:
 
 ## API Endpoints Summary
 
+(For example request bodies, see the "API Endpoint Payloads" section below.)
+
 ### Authentication (`/api/auth`, `/api/users`)
 | Method | Endpoint | Description | Access |
 |---|---|---|---|
@@ -116,7 +129,63 @@ The process is as follows:
 | `GET` | `/api/votes/check/{eid}` | Check if the current user has voted. | User |
 | `DELETE` | `/api/votes/{eid}` | Retract the current user's vote. | User |
 
-## Getting Started
+## API Endpoint Payloads
+
+Below are example JSON payloads for `POST` and `PUT` requests.
+
+### Authentication
+
+#### `POST /api/users/register`
+```json
+{
+    "username": "newuser",
+    "email": "user@example.com",
+    "password": "password123",
+    "roles": ["user"]
+}
+```
+
+#### `POST /api/auth/login`
+```json
+{
+    "username": "newuser",
+    "password": "password123"
+}
+```
+
+### Election Management
+
+#### `POST /api/elections` or `PUT /api/elections/{id}`
+```json
+{
+    "name": "Annual Board Election",
+    "description": "Election for the 2024 board members.",
+    "startTime": "2024-08-01T09:00:00",
+    "endTime": "2024-08-15T17:00:00"
+}
+```
+
+### Candidate Management
+
+#### `POST /api/elections/{eid}/candidates` or `PUT /api/elections/{eid}/candidates/{cid}`
+```json
+{
+    "name": "Jane Doe",
+    "affiliation": "Independent"
+}
+```
+
+### Voting Operations
+
+#### `POST /api/votes`
+```json
+{
+    "electionId": 1,
+    "candidateId": 1
+}
+```
+
+## Getting Started (Local Development)
 
 ### Prerequisites
 - [JDK 17](https://adoptium.net/temurin/releases/) or newer
@@ -153,7 +222,8 @@ The process is as follows:
 ## Future Work
 
 The project is actively being developed. Upcoming features include:
+- A standalone React-based user interface.
+- Persistence layer for the blockchain to survive restarts.
+- System-wide notifications and audit logging for vote transactions.
 - Enhanced user profile management.
-- Bulk operations for adding voters and candidates.
-- System-wide notifications and audit logging.
 - Advanced analytics and real-time results dashboards.
